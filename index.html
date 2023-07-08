@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PDF.js Example</title>
+    <title>PDF as Images Example</title>
     <style>
       #pdfContainer {
         display: flex;
         flex-wrap: wrap;
       }
-      canvas {
+      img {
         border: 1px solid black;
         margin: 10px;
       }
@@ -16,46 +16,29 @@
   <body>
     <div id="pdfContainer"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
     <script>
-      // Path to your PDF file
-      const pdfUrl = 'nadaB.pdf';
+      const imageUrls = [
+        '0001.png',
+        '0002.png',
+        '0003.png',
+        '0004.png',
+        '0005.png',
+        '0006.png',
 
-      // PDF.js configuration
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+        // Add the URLs of your PDF page images here
+      ];
 
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const renderImages = () => {
+        const pdfContainer = document.getElementById('pdfContainer');
 
-      loadingTask.promise.then((pdf) => {
-        const numPages = pdf.numPages;
+        imageUrls.forEach((imageUrl) => {
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          pdfContainer.appendChild(img);
+        });
+      };
 
-        const renderPage = (pageNumber) => {
-          pdf.getPage(pageNumber).then((page) => {
-            const scale = 1.5;
-            const viewport = page.getViewport({ scale });
-
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            const renderContext = {
-              canvasContext: context,
-              viewport: viewport,
-            };
-
-            page.render(renderContext).promise.then(() => {
-              document.getElementById('pdfContainer').appendChild(canvas);
-
-              if (pageNumber < numPages) {
-                renderPage(pageNumber + 1);
-              }
-            });
-          });
-        };
-
-        renderPage(1);
-      });
+      renderImages();
     </script>
   </body>
 </html>

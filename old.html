@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PDF.js Example</title>
+    <style>
+      #pdfContainer {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      canvas {
+        border: 1px solid black;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pdfContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+      // Path to your PDF file
+      const pdfUrl = 'nadaB.pdf';
+
+      // PDF.js configuration
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+
+      loadingTask.promise.then((pdf) => {
+        const numPages = pdf.numPages;
+
+        const renderPage = (pageNumber) => {
+          pdf.getPage(pageNumber).then((page) => {
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+              canvasContext: context,
+              viewport: viewport,
+            };
+
+            page.render(renderContext).promise.then(() => {
+              document.getElementById('pdfContainer').appendChild(canvas);
+
+              if (pageNumber < numPages) {
+                renderPage(pageNumber + 1);
+              }
+            });
+          });
+        };
+
+        renderPage(1);
+      });
+    </script>
+  </body>
+</html>
